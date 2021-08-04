@@ -31,6 +31,8 @@ export class Appointment extends Model<AppointmentSchema>
 
 	@observable treatmentID: string = "";
 
+	@observable multi_treatments: { id: string; type: string; units: number}[] = [];
+
 	@observable units: number = 1;
 
 	@observable patientID: string = "";
@@ -83,14 +85,12 @@ export class Appointment extends Model<AppointmentSchema>
 
 	@computed
 	get expenses() {
-		if (!this.treatment) {
-			if (this.treatmentID.indexOf("|") > -1) {
-				return num(this.treatmentID.split("|")[1]);
-			} else {
-				return 0;
-			}
-		}
-		return this.treatment.expenses * this.units;
+		var local_expenses = 0;
+		// There's no checks in place, may cause a bug in the future.
+		this.multi_treatments.forEach((x) => {
+			local_expenses += (((treatments!.docs.find((y) => y._id === x.id))!.expenses) * x.units);
+		});
+		return local_expenses;
 	}
 
 	@computed
@@ -186,6 +186,7 @@ export class Appointment extends Model<AppointmentSchema>
 	fromJSON(json: AppointmentSchema) {
 		this._id = json._id;
 		this.treatmentID = json.treatmentID;
+		this.multi_treatments = json.multi_treatments;
 		this.patientID = json.patientID;
 		this.date = json.date;
 		this.involvedTeeth = json.involvedTeeth;
@@ -214,6 +215,7 @@ Diagnosis: ${json.diagnosis}`
 		return {
 			_id: this._id,
 			treatmentID: this.treatmentID,
+			multi_treatments: Array.from(this.multi_treatments),
 			patientID: this.patientID,
 			date: this.date,
 			involvedTeeth: Array.from(this.involvedTeeth),

@@ -405,6 +405,26 @@ export class SettingsPage extends React.Component {
 										}}
 										disabled={!this.canEdit}
 									/>
+									<Toggle
+										data-testid="invoices-toggle"
+										onText={text("invoices enabled").c}
+										offText={
+											text("invoices disabled").c
+										}
+										checked={
+											!!modules.setting!.getSetting(
+												"module_invoices"
+											)
+										}
+										onChange={(ev, val) => {
+											modules.setting!.setSetting(
+												"module_invoices",
+												val ? "enable" : ""
+											);
+										}}
+										defaultChecked={true}
+										disabled={false}
+									/>
 								</SectionComponent>
 							</Col>
 							<Col md={9} className="backups">
@@ -412,7 +432,7 @@ export class SettingsPage extends React.Component {
 									title={text("restore from file").h}
 								>
 									{core.status.isOnline.files &&
-									core.status.version !== "offline" ? (
+										core.status.version !== "offline" ? (
 										<div>
 											<DefaultButton
 												onClick={() =>
@@ -445,7 +465,7 @@ export class SettingsPage extends React.Component {
 													if (
 														e.target.files &&
 														e.target.files.length >
-															0
+														0
 													) {
 														core.restore.fromFile(
 															e.target.files[0]
@@ -486,7 +506,7 @@ export class SettingsPage extends React.Component {
 									title={text("automated backups").h}
 								>
 									{core.status.isOnline.files &&
-									core.status.version !== "offline" ? (
+										core.status.version !== "offline" ? (
 										modules.setting!.autoBackups.length ? (
 											modules
 												.setting!.autoBackups.slice()
@@ -544,14 +564,14 @@ export class SettingsPage extends React.Component {
 																						)
 																							? file
 																							: new Blob(
-																									[
-																										file,
-																									],
-																									{
-																										type:
-																											"text/plain;charset=utf-8",
-																									}
-																							  ),
+																								[
+																									file,
+																								],
+																								{
+																									type:
+																										"text/plain;charset=utf-8",
+																								}
+																							),
 																						`apexo-backup-${formatDate(
 																							backup.date,
 																							modules.setting!.getSetting(
@@ -560,8 +580,7 @@ export class SettingsPage extends React.Component {
 																						).replace(
 																							/\W/g,
 																							"-"
-																						)}.${
-																							core.backupsExtension
+																						)}.${core.backupsExtension
 																						}`
 																					);
 																				}}
@@ -575,7 +594,7 @@ export class SettingsPage extends React.Component {
 																				}
 																			</Link>
 																			{diffInDays ||
-																			index ? (
+																				index ? (
 																				<Link
 																					disabled={
 																						this
@@ -590,7 +609,7 @@ export class SettingsPage extends React.Component {
 																								backup.path
 																							);
 																							await modules.setting!.updateAutoBackups();
-																						} catch (e) {}
+																						} catch (e) { }
 																						this.inProgress = false;
 																					}}
 																				>
@@ -619,7 +638,7 @@ export class SettingsPage extends React.Component {
 																							await modules.setting!.updateAutoBackups();
 																							await core.backup.toFilesServer();
 																							await modules.setting!.updateAutoBackups();
-																						} catch (e) {}
+																						} catch (e) { }
 																						this.inProgress = false;
 																					}}
 																				>
@@ -638,13 +657,13 @@ export class SettingsPage extends React.Component {
 																text={
 																	diffInDays
 																		? diffInDays +
-																		  " " +
-																		  text(
-																				"days ago"
-																		  ).c
+																		" " +
+																		text(
+																			"days ago"
+																		).c
 																		: text(
-																				"today"
-																		  ).c
+																			"today"
+																		).c
 																}
 															/>
 														</div>

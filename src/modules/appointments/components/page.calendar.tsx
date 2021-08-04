@@ -173,31 +173,31 @@ export class CalendarPage extends React.Component {
 						farItems:
 							core.router.innerWidth > 550
 								? [
-										{
-											key: "my-appointments-only",
-											onRender: () => (
-												<Toggle
-													checked={this.showAll}
-													onText={
-														text("all appointments")
-															.c
-													}
-													offText={
-														text(
-															"my appointments only"
-														).c
-													}
-													onChange={(
-														ev,
-														newValue
-													) => {
-														this.showAll = newValue!;
-													}}
-													className="appointments-toggle"
-												/>
-											),
-										},
-								  ]
+									{
+										key: "my-appointments-only",
+										onRender: () => (
+											<Toggle
+												checked={this.showAll}
+												onText={
+													text("all appointments")
+														.c
+												}
+												offText={
+													text(
+														"my appointments only"
+													).c
+												}
+												onChange={(
+													ev,
+													newValue
+												) => {
+													this.showAll = newValue!;
+												}}
+												className="appointments-toggle"
+											/>
+										),
+									},
+								]
 								: undefined,
 						items: [
 							{
@@ -318,11 +318,11 @@ export class CalendarPage extends React.Component {
 											!!this.c.selectedWeek.find(
 												(x) =>
 													x.dateNum ===
-														this.c.currentDay &&
+													this.c.currentDay &&
 													x.monthNum ===
-														this.c.currentMonth &&
+													this.c.currentMonth &&
 													x.yearNum ===
-														this.c.currentYear
+													this.c.currentYear
 											)
 										}
 										iconProps={{
@@ -373,11 +373,11 @@ export class CalendarPage extends React.Component {
 											);
 											const isCurrent =
 												day.dateNum ===
-													this.c.currentDay &&
+												this.c.currentDay &&
 												this.c.currentMonth ===
-													day.monthNum &&
+												day.monthNum &&
 												day.yearNum ===
-													this.c.currentYear;
+												this.c.currentYear;
 											return Object.assign(day, {
 												num,
 												isWeekend,
@@ -393,7 +393,7 @@ export class CalendarPage extends React.Component {
 												indexOfFirstIsSelected > index;
 											const isFuture =
 												indexOfFirstIsSelected <
-													index && !day.isSelected;
+												index && !day.isSelected;
 											return Object.assign(day, {
 												isFuture,
 												isPast,
@@ -458,9 +458,8 @@ export class CalendarPage extends React.Component {
 				)}
 
 				<div
-					className={`week-view${
-						this.collapsedMobileCalendar ? " full-height" : ""
-					}`}
+					className={`week-view${this.collapsedMobileCalendar ? " full-height" : ""
+						}`}
 				>
 					<div
 						id="full-day-cols"
@@ -477,8 +476,8 @@ export class CalendarPage extends React.Component {
 											? " selected"
 											: "") +
 										(day.dateNum === this.c.currentDay &&
-										this.c.currentMonth === day.monthNum &&
-										day.yearNum === this.c.currentYear
+											this.c.currentMonth === day.monthNum &&
+											day.yearNum === this.c.currentYear
 											? " current"
 											: "")
 									}
@@ -551,23 +550,23 @@ export class CalendarPage extends React.Component {
 															(appointment.isMissed
 																? " missed"
 																: appointment.isDone
-																? " done"
-																: "")
+																	? " done"
+																	: "")
 														}
 													>
 														{appointment.isMissed
 															? text("missed")
 															: appointment.isDone
-															? text("done")
-															: appointment.formattedTime}
+																? text("done")
+																: appointment.formattedTime}
 													</div>
 													<div className="m-b-5">
 														<ProfileSquaredComponent
 															text={
 																appointment.treatment
 																	? appointment
-																			.treatment
-																			.type
+																		.treatment
+																		.type
 																	: ""
 															}
 															size={1}
@@ -640,14 +639,14 @@ export class CalendarPage extends React.Component {
 							value={
 								this.newAppointmentForPatient
 									? [
-											{
-												key: this
-													.newAppointmentForPatientID,
-												text: this
-													.newAppointmentForPatient
-													.name,
-											},
-									  ]
+										{
+											key: this
+												.newAppointmentForPatientID,
+											text: this
+												.newAppointmentForPatient
+												.name,
+										},
+									]
 									: []
 							}
 							onChange={(selectedKeys) => {
@@ -682,7 +681,14 @@ export class CalendarPage extends React.Component {
 										this.c.selected.month,
 										this.c.selected.day
 									).getTime();
-									newApt.treatmentID = option!.key.toString();
+									// newApt.treatmentID = option!.key.toString();
+									// newApt.multi_treatments.map(
+									// 	(t) => ({
+									// 		id: option!.key.toString(),
+									// 		type: (modules.treatments!.docs.find((x) => x._id === t.id))!.type,
+									// 		units: 1,
+									// 	})
+									// );
 									modules.appointments!.add(newApt);
 									this.showAdditionPanel = false;
 									this.newAppointmentForPatientID = "";
