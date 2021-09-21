@@ -41,14 +41,13 @@ import {
 	TextField,
 	Toggle,
 } from "office-ui-fabric-react";
-
 @observer
 export class AppointmentEditorPanel extends React.Component<
-	{
-		appointment: Appointment | undefined | null;
-		onDismiss: () => void;
-	},
-	{}
+{
+	appointment: Appointment | undefined | null;
+	onDismiss: () => void;
+},
+{}
 > {
 	@observable timerInputs: number[] = [0, 0, 0];
 
@@ -57,10 +56,10 @@ export class AppointmentEditorPanel extends React.Component<
 		minutes: string;
 		am: boolean;
 	} = {
-		hours: this.calcTime.hours,
-		minutes: this.calcTime.minutes,
-		am: this.calcTime.am,
-	};
+			hours: this.calcTime.hours,
+			minutes: this.calcTime.minutes,
+			am: this.calcTime.am,
+		};
 
 	tabs = [
 		{
@@ -83,6 +82,11 @@ export class AppointmentEditorPanel extends React.Component<
 			title: text("delete").h,
 			icon: "trash",
 			hidden: !this.canEdit,
+		},
+		{
+			key: "print",
+			title: text("print").h,
+			icon: "Print",
 		},
 	];
 
@@ -219,17 +223,17 @@ export class AppointmentEditorPanel extends React.Component<
 							avatar={
 								this.props.appointment!.patient!.avatar
 									? imagesTable.table[
+										this.props.appointment!.patient!
+											.avatar
+									]
+										? imagesTable.table[
+										this.props.appointment!.patient!
+											.avatar
+										]
+										: imagesTable.fetchImage(
 											this.props.appointment!.patient!
 												.avatar
-									  ]
-										? imagesTable.table[
-												this.props.appointment!.patient!
-													.avatar
-										  ]
-										: imagesTable.fetchImage(
-												this.props.appointment!.patient!
-													.avatar
-										  )
+										)
 									: undefined
 							}
 						/>
@@ -268,7 +272,7 @@ export class AppointmentEditorPanel extends React.Component<
 												if (date) {
 													this.props.appointment!.setDate(
 														date.getTime() +
-															60 * 1000 // adds a minute
+														60 * 1000 // adds a minute
 													);
 												}
 											}}
@@ -402,12 +406,12 @@ export class AppointmentEditorPanel extends React.Component<
 													new Date(
 														this.props.appointment.date
 													).setHours(0, 0, 0, 0) >
-														new Date().setHours(
-															0,
-															0,
-															0,
-															0
-														))
+													new Date().setHours(
+														0,
+														0,
+														0,
+														0
+													))
 											}
 											onChange={(e, newVal) => {
 												this.props.appointment!.isDone = newVal!;
@@ -466,7 +470,7 @@ export class AppointmentEditorPanel extends React.Component<
 							/>
 							<br />
 							<Row gutter={8}>
-								<Col sm={12}>
+								{/* <Col sm={12}>
 									<div className="appointment-input treatment">
 										<Dropdown
 											label={text("treatment").c}
@@ -507,7 +511,7 @@ export class AppointmentEditorPanel extends React.Component<
 											data-testid="units-num"
 										/>
 									</div>
-								</Col>
+								</Col> */}
 								<Col span={24}>
 									<div className="appointment-input involved-teeth">
 										<TagInputComponent
@@ -541,6 +545,110 @@ export class AppointmentEditorPanel extends React.Component<
 								</Col>
 							</Row>
 
+							<div>
+								<div className="appointment-input treatments">
+									<TagInputComponent
+										label={text("treatments").c}
+										options={modules.treatments!.docs.map(
+											this.treatmentToTagInput
+										)}
+										suggestionsHeaderText={
+											text("select treatment").c
+										}
+										noResultsFoundText={
+											text("no treatment found").c
+										}
+										disabled={!this.canEdit}
+										value={this.props.appointment!.multi_treatments.map(
+											(t) => ({
+												key: t.id,
+												text: (modules.treatments!.docs.find((x) => x._id === t.id))!.type,
+												units: 1,
+											})
+										)}
+										onChange={(selectedKeys) => {
+											this.props.appointment!.multi_treatments = selectedKeys.map(
+												(selectedID) => ({
+													id: selectedID,
+													type: (modules.treatments!.docs.find((x) => x._id === selectedID))!.type,
+													units: 1,
+												})
+											);
+										}}
+									/>
+								</div>
+								<br />
+								<div id="treatment-items">
+									{this.props.appointment!.multi_treatments.map(
+										(item) => {
+											return (
+												<Row key={item.id}>
+													<Col
+														span={12}
+														className="m-b-5"
+													>
+														<ProfileSquaredComponent
+															text={
+																item.type
+															}
+															onRenderInitials={() => (
+																<Icon iconName="Cricket" />
+															)}
+															subText={
+																modules.setting!.getSetting(
+																	"currencySymbol"
+																) + " " + ((modules.treatments!.docs.find((x) => x._id === item.id))!.expenses).toString()
+															}
+														/>
+													</Col>
+													<Col
+														span={12}
+														style={{
+															textAlign:
+																"right",
+														}}
+													>
+														<div className="appointment-input units-number">
+															<TextField
+																label={text("units number").c}
+																disabled={!this.canEdit}
+																type="number"
+																value={item.units.toString()}
+																onChange={(e, newValue) => {
+																	item.units = num(
+																		newValue!
+																	);
+																}}
+																data-testid="units-num"
+															/>
+														</div>
+														{this.canEdit ? (
+															<IconButton
+																iconProps={{
+																	iconName:
+																		"delete",
+																}}
+																onClick={() => {
+																	this.props.appointment!.multi_treatments = this.props.appointment!.multi_treatments.filter(
+																		(
+																			x
+																		) =>
+																			x.id !==
+																			item.id
+																	);
+																}}
+															/>
+														) : (
+															""
+														)}
+													</Col>
+												</Row>
+											);
+										}
+									)}
+								</div>
+							</div>
+							{/* Perscriptions Section */}
 							{modules.setting!.getSetting(
 								"module_prescriptions"
 							) ? (
@@ -589,44 +697,25 @@ export class AppointmentEditorPanel extends React.Component<
 													.join(",")}
 											</h2>
 											<hr />
-											<h3>
-												Patient:{" "}
-												{
-													(
-														this.props.appointment!
-															.patient || {
-															name: "",
-														}
-													).name
-												}
-											</h3>
 											<Row>
 												<Col span={12}>
 													<h4>
-														Age:{" "}
+														Patient:{" "}
 														{
 															(
-																this.props
-																	.appointment!
+																this.props.appointment!
 																	.patient || {
-																	age: 0,
+																	name: "",
 																}
-															).age
+															).name
 														}
 													</h4>
 												</Col>
 												<Col span={12}>
 													<h4>
-														Gender:{" "}
+														Date:{" "}
 														{
-															(
-																this.props
-																	.appointment!
-																	.patient || {
-																	gender:
-																		"male",
-																}
-															).gender
+															new Date(this.props.appointment!.date).toDateString()
 														}
 													</h4>
 												</Col>
@@ -689,8 +778,7 @@ export class AppointmentEditorPanel extends React.Component<
 											}
 										)}
 									</div>
-
-									{this.props.appointment!.prescriptions
+									{/* {this.props.appointment!.prescriptions
 										.length ? (
 										<DefaultButton
 											onClick={() => {
@@ -701,7 +789,7 @@ export class AppointmentEditorPanel extends React.Component<
 										/>
 									) : (
 										""
-									)}
+									)} */}
 								</div>
 							) : (
 								""
@@ -853,8 +941,8 @@ export class AppointmentEditorPanel extends React.Component<
 													"time_tracking"
 												)
 													? text("expenses").c +
-													  " + " +
-													  text("time value").r
+													" + " +
+													text("time value").r
 													: text("expenses").c
 											}
 											value={round(
@@ -879,7 +967,7 @@ export class AppointmentEditorPanel extends React.Component<
 											)}
 											errorMessage={
 												this.props.appointment!.profit <
-												0
+													0
 													? text("price is too low").c
 													: undefined
 											}
@@ -894,18 +982,18 @@ export class AppointmentEditorPanel extends React.Component<
 													.outstandingAmount
 													? text("outstanding").c
 													: this.props.appointment!
-															.overpaidAmount
-													? text("overpaid").c
-													: text("outstanding").c
+														.overpaidAmount
+														? text("overpaid").c
+														: text("outstanding").c
 											}
 											value={
 												this.props.appointment!
 													.outstandingAmount
 													? this.props.appointment!.outstandingAmount.toString()
 													: this.props.appointment!
-															.overpaidAmount
-													? this.props.appointment!.overpaidAmount.toString()
-													: this.props.appointment!.outstandingAmount.toString()
+														.overpaidAmount
+														? this.props.appointment!.overpaidAmount.toString()
+														: this.props.appointment!.outstandingAmount.toString()
 											}
 											prefix={modules.setting!.getSetting(
 												"currencySymbol"
@@ -914,11 +1002,11 @@ export class AppointmentEditorPanel extends React.Component<
 												this.props.appointment!
 													.outstandingAmount
 													? text("outstanding amount")
-															.r
+														.r
 													: this.props.appointment!
-															.overpaidAmount
-													? text("overpaid amount").r
-													: undefined
+														.overpaidAmount
+														? text("overpaid amount").r
+														: undefined
 											}
 										/>
 									</Col>
@@ -955,11 +1043,116 @@ export class AppointmentEditorPanel extends React.Component<
 						""
 					)}
 
+					{core.router.selectedSub === "print" ? (
+						<div>
+							<center>
+								<img src="https://i.imgur.com/C0aLPXZ.png" />
+								<h3>Dental Services</h3>
+							</center>
+							<br />
+							<br />
+							<div id="treatment-items">
+								<div>
+									<b>Operating Staff:{" "}</b>
+									{
+										this.props.appointment.operatingStaff
+											.map((x) => x.name)
+											.join(", ")
+									}
+									<br />
+									<b>Patient:{" "}</b>
+									{
+										(
+											this.props.appointment!
+												.patient || {
+												name: "",
+											}
+										).name
+									}
+									<br />
+									<b>Date:{" "}</b>
+									{
+										new Date(this.props.appointment!.date).toDateString()
+									}
+									<br />
+									<br />
+									<hr />
+									<h3>Treatment Summary</h3>
+								</div>
+								{this.props.appointment!.multi_treatments.map(
+									(item) => {
+										return (
+											<Row key={item.id}>
+												<Col
+													span={12}
+												>
+													<ProfileSquaredComponent
+														text={
+															item.type
+														}
+														onRenderInitials={() => (
+															<Icon iconName="Cricket" />
+														)}
+														subText={
+															"Units: " + item.units
+														}
+													/>
+												</Col>
+												<Col
+													span={8}
+													style={{
+														alignContent: "right",
+														alignItems: "right",
+														textAlign: "right",
+													}}
+												>
+													{modules.setting!.getSetting(
+														"currencySymbol"
+													)}{" "}
+													{
+														((modules.treatments!.docs.find((x) => x._id === item.id))!.expenses).toString()
+													}
+												</Col>
+											</Row>
+										);
+									}
+								)}
+							</div>
+							<br />
+							<hr />
+							<Row>
+								<b>Total Cost:</b>{" "} {modules.setting!.getSetting(
+									"currencySymbol"
+								)}
+								{
+									" " + this.props.appointment!.expenses.toString()
+								}
+							</Row>
+							<br />
+							<br />
+							<div id="treatment-footer">
+								<center>
+									50-V, St. 37, Phase 8, Defence, Lahore<br />
+									Email: info@floss.pk, Phone: 0300-0979979
+								</center>
+							</div>
+							{<DefaultButton
+								onClick={() => {
+									print();
+								}}
+								iconProps={{ iconName: "print" }}
+								text={text("print invoice").c}
+							/>}
+						</div>
+					) : (
+						""
+					)}
+
 					<br />
 					<br />
 					<br />
 				</div>
-			</Panel>
+			</Panel >
 		) : (
 			<div />
 		);
@@ -996,9 +1189,15 @@ export class AppointmentEditorPanel extends React.Component<
 	prescriptionToTagInput(p: PrescriptionItem) {
 		return {
 			key: p._id,
-			text: `${p.name}: ${p.doseInMg}${text("mg")} ${p.timesPerDay}X${
-				p.unitsPerTime
-			} ${text(p.form as any)}`,
+			text: `${p.name}: ${p.doseInMg}${text("mg")} ${p.timesPerDay}X${p.unitsPerTime
+				} ${text(p.form as any)}`,
+		};
+	}
+
+	treatmentToTagInput(t: Treatment) {
+		return {
+			key: t._id,
+			text: t.type,
 		};
 	}
 }

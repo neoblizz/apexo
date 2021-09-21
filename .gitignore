@@ -1,5 +1,7 @@
 # dependencies
 node_modules
+package-lock.json
+win32-x64-template
 
 # misc
 .DS_Store

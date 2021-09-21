@@ -138,6 +138,21 @@
 	.ms-Panel-commands {
 		display: none;
 	}
+	
+	#treatment-items {
+		background-color: white;
+		height: 100%;
+		width: 100%;
+		position: fixed;
+		top: 0;
+		left: 0;
+		margin: 0;
+		padding: 30px;
+		font-size: 14px;
+		line-height: 18px;
+		z-index: 9999999;
+	}
+
 	#prescription-items {
 		background-color: white;
 		height: 100%;
@@ -150,6 +165,10 @@
 		font-size: 14px;
 		line-height: 18px;
 		z-index: 9999999;
+	}
+
+	#treatment-footer {
+		text-align: center;
 	}
 
 	.ms-Persona-primaryText {
@@ -187,4 +206,23 @@
 	margin: 0 5px 0 0;
 	font-size: 13px;
 	font-style: italic;
+}
+
+.treatment-items {
+	background-color: white;
+	height: 100%;
+	width: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 30px;
+	font-size: 14px;
+	line-height: 18px;
+	z-index: 9999999;
+}
+
+.treatment-footer {
+	text-align: center;
+	padding: 40px;
 }
